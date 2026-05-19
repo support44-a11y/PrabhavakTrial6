@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prabhavak by Anaxee | Digital Runner Program</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            cyan: '#06b6d4',
+                            turquoise: '#14b8a6',
+                            deep: '#083344',
+                            surface: '#f8fafc',
+                            card: '#ffffff'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 20px 40px -15px rgba(8, 51, 68, 0.05)',
+                        'glow': '0 0 40px -10px rgba(6, 182, 212, 0.4)',
+                        'phone': '0 50px 100px -20px rgba(8, 51, 68, 0.5)',
+                        'inner-phone': 'inset 0 4px 20px rgba(0,0,0,0.05)'
+                    },
+                    animation: {
+                        'breathe': 'breathe 4s ease-in-out infinite',
+                        'breathe-delayed': 'breathe 4s ease-in-out 2s infinite',
+                        'shadow-pulse': 'shadowPulse 4s ease-in-out infinite',
+                        'shadow-pulse-delayed': 'shadowPulse 4s ease-in-out 2s infinite',
+                        'scroll-up': 'scrollUp 15s linear infinite',
+                        'float-slow': 'floatSlow 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite alternate',
+                    },
+                    keyframes: {
+                        breathe: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        },
+                        shadowPulse: {
+                            '0%, 100%': { transform: 'scale(1)', opacity: '0.4' },
+                            '50%': { transform: 'scale(0.8)', opacity: '0.15' },
+                        },
+                        scrollUp: {
+                            '0%': { transform: 'translateY(100%)' },
+                            '100%': { transform: 'translateY(-180%)' },
+                        },
+                        floatSlow: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        pulseGlow: {
+                            '0%': { boxShadow: '0 0 20px -10px rgba(6, 182, 212, 0.3)', opacity: '0.4' },
+                            '100%': { boxShadow: '0 0 60px -5px rgba(6, 182, 212, 0.6)', opacity: '0.7' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #06b6d4; border-radius: 10px; }
+        
+        .text-brand-gradient {
+            background: linear-gradient(135deg, #06b6d4 0%, #14b8a6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .bg-brand-gradient { 
+            background: linear-gradient(135deg, #06b6d4 0%, #14b8a6 100%, #06b6d4); 
+            background-size: 200% 200%;
+        }
+
+        .btn-shine { position: relative; overflow: hidden; }
+        .btn-shine::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-20deg); animation: shine 3s infinite;
+        }
+        @keyframes shine { 0% { left: -100%; } 20% { left: 200%; } 100% { left: 200%; } }
+
+        details > summary::-webkit-details-marker { display: none; }
+        
+        .ticket-cutout-left {
+            position: absolute; left: -15px; top: 50%; transform: translateY(-50%);
+            width: 30px; height: 30px; background-color: #f8fafc; border-radius: 50%;
+        }
+        .ticket-cutout-right {
+            position: absolute; right: -15px; top: 50%; transform: translateY(-50%);
+            width: 30px; height: 30px; background-color: #f8fafc; border-radius: 50%;
+        }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        .fade-mask {
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent 100%);
+        }
+
+        /* Fixed responsive logo sizing */
+        .logo { height: 48px; width: auto; max-width: 220px; }
+        @media (min-width: 640px) { .logo { height: 56px; } }
+        @media (min-width: 1024px) { .logo { height: 72px; } }
+    </style>
+</head>
+<body class="text-slate-600 antialiased selection:bg-brand-cyan selection:text-white">
+
+    <!-- 1. Header with Solo Anaxee Logo -->
+    <header class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-slate-200 shadow-sm transition-all">
+        <div class="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+            
+            <!-- Logo - Using explicit sizing so it is 100% visible -->
+                <a href="https://anaxee.com/" target="_blank" class="flex items-center hover:opacity-80 transition-opacity">
+                <!-- Using project images from root: Anaxee Black Logo for light header -->
+                <img src="./Anaxee Black Logo.png" alt="Anaxee Logo" class="logo object-contain max-w-[150px]" loading="eager">
+            </a>
+
+            <a href="#ticket" class="btn-shine bg-brand-cyan hover:bg-brand-turquoise text-white px-6 sm:px-8 py-3.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 shadow-glow hover:-translate-y-0.5 shrink-0">
+                <span class="hidden sm:inline">Join Network</span><span class="sm:hidden">Join</span> <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+    </header>
+
+    <main class="pt-24">
+        <!-- 2. Hero Section & iPhone Pro Max Mockup -->
+        <section class="relative pt-20 pb-20 overflow-hidden bg-white">
+            <div class="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-brand-cyan/10 via-transparent to-transparent -z-10 animate-pulse-glow"></div>
+            
+            <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                
+                <!-- Left: Hero Copy -->
+                <div class="reveal active z-10 text-center lg:text-left pt-10">
+                    <div class="inline-flex items-center gap-2 bg-brand-surface border border-slate-200 px-5 py-2 rounded-full text-xs font-bold text-brand-deep tracking-widest uppercase mb-8 shadow-sm">
+                        <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan animate-pulse"></span> Anaxee Digital Network
+                    </div>
+                    
+                    <h1 class="text-5xl md:text-6xl lg:text-[4.5rem] font-black text-brand-deep leading-[1.3] md:leading-[1.3] tracking-tight mb-4">
+                        रोज़ Instagram <br>scroll करते हो?
+                    </h1>
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-brand-gradient mb-8 leading-[1.4]">
+                        यही काम करके पैसे भी मिल सकते हैं!
+                    </h2>
+                    
+                    <p class="text-xl text-slate-500 font-medium mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                        Promote brands on Instagram, YouTube, Facebook, WhatsApp, and X. Turn your screen time into earning time.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
+                        <a href="#ticket" class="btn-shine w-full sm:w-auto bg-brand-deep text-white px-10 py-5 rounded-full text-lg font-bold shadow-soft hover:shadow-glow hover:bg-slate-800 transition-all active:scale-95 flex items-center justify-center gap-3">
+                            Start Earning Today <i class="fa-solid fa-wallet text-brand-cyan text-xl"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- Social Platforms Supported (X Twitter working with v6.5.2) -->
+                    <div class="mt-14 pt-8 border-t border-slate-100 flex items-center justify-center lg:justify-start gap-8 text-3xl text-slate-400">
+                        <a href="https://www.instagram.com/anaxee.digital.runners?igsh=MTByZHlwN3NqcXNuNw==" target="_blank" class="hover:text-[#E1306C] transition-colors hover:scale-110"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/share/14uU7MmfDe/" target="_blank" class="hover:text-[#1877F2] transition-colors hover:scale-110"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="https://youtube.com/@anaxeedigitalrunnerspvtltd?si=O6cla9qJKSH6BPMU" target="_blank" class="hover:text-[#FF0000] transition-colors hover:scale-110"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="https://x.com/anaxee" target="_blank" class="hover:text-black transition-colors hover:scale-110"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="https://www.linkedin.com/company/anaxee-digital-runners-private-limited/posts/?feedView=all" target="_blank" class="hover:text-[#0A66C2] transition-colors hover:scale-110"><i class="fa-brands fa-linkedin"></i></a>
+                    </div>
+                </div>
+
+                <!-- Right: Full Scale iPhone Pro Max Mockup -->
+                <div class="reveal active relative mx-auto w-[350px] md:w-[430px] h-[760px] md:h-[932px] animate-float-slow mt-16 lg:mt-0">
+                    
+                    <div class="absolute inset-0 bg-slate-50 border-[18px] md:border-[24px] border-brand-deep rounded-[3.5rem] md:rounded-[4.5rem] shadow-phone overflow-hidden relative z-10 shadow-inner-phone">
+                        <div class="absolute top-3 md:top-4 left-1/2 -translate-x-1/2 w-28 md:w-[126px] h-7 md:h-[36px] bg-brand-deep rounded-full z-30 shadow-md"></div>
+                        
+                        <div class="px-6 md:px-8 pt-20 md:pt-28 pb-8 md:pb-10 h-full flex flex-col relative z-20">
+                            <div class="text-center mb-8 md:mb-12">
+                                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Total Earnings</h3>
+                                <h2 class="text-6xl md:text-[4.5rem] font-black text-brand-deep tracking-tighter leading-none">₹62,400</h2>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 md:gap-5 mb-8 md:mb-10">
+                                <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100 text-center hover:shadow-md transition-shadow">
+                                    <div class="w-12 h-12 mx-auto rounded-full bg-brand-cyan/10 text-brand-cyan flex items-center justify-center mb-3"><i class="fa-solid fa-arrow-down text-xl"></i></div>
+                                    <p class="text-xs font-bold text-brand-deep">Withdraw</p>
+                                </div>
+                                <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100 text-center hover:shadow-md transition-shadow">
+                                    <div class="w-12 h-12 mx-auto rounded-full bg-brand-turquoise/10 text-brand-turquoise flex items-center justify-center mb-3"><i class="fa-solid fa-chart-pie text-xl"></i></div>
+                                    <p class="text-xs font-bold text-brand-deep">Analytics</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center mb-4 px-2">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Live Activity</span>
+                                <span class="w-3 h-3 rounded-full bg-green-500 animate-pulse"></span>
+                            </div>
+                            
+                            <div class="relative flex-1 overflow-hidden rounded-[2.5rem] bg-white border border-slate-100 p-5 shadow-inner fade-mask">
+                                <div class="absolute inset-x-5 top-12 space-y-4 animate-scroll-up">
+                                    
+                                    <div class="bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-100 flex flex-col gap-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs font-bold text-brand-cyan">WhatsApp Status</span>
+                                            <span class="text-sm md:text-base font-black text-green-600">+ ₹120</span>
+                                        </div>
+                                        <p class="text-[11px] md:text-xs text-slate-400">14 clicks generated</p>
+                                    </div>
+
+                                    <div class="bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-100 flex flex-col gap-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs font-bold text-brand-turquoise">Payout Processed</span>
+                                            <span class="text-sm md:text-base font-black text-brand-deep">- ₹2,100</span>
+                                        </div>
+                                        <p class="text-[11px] md:text-xs text-slate-400">Sent to Bank Account</p>
+                                    </div>
+
+                                    <div class="bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-100 flex flex-col gap-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs font-bold text-brand-cyan">Insta Story Link</span>
+                                            <span class="text-sm md:text-base font-black text-green-600">+ ₹340</span>
+                                        </div>
+                                        <p class="text-[11px] md:text-xs text-slate-400">Brand campaign complete</p>
+                                    </div>
+
+                                    <div class="bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-100 flex flex-col gap-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs font-bold text-brand-turquoise">Bonus Reward</span>
+                                            <span class="text-sm md:text-base font-black text-green-600">+ ₹500</span>
+                                        </div>
+                                        <p class="text-[11px] md:text-xs text-slate-400">Monthly target hit</p>
+                                    </div>
+
+                                    <div class="bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-100 flex flex-col gap-2">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs font-bold text-brand-cyan">Facebook Group</span>
+                                            <span class="text-sm md:text-base font-black text-green-600">+ ₹280</span>
+                                        </div>
+                                        <p class="text-[11px] md:text-xs text-slate-400">Campaign engagement</p>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="mt-6 md:mt-8 bg-white rounded-full p-5 md:p-6 flex justify-around items-center shadow-md border border-slate-100 shrink-0">
+                                <i class="fa-solid fa-house text-brand-cyan text-2xl"></i>
+                                <i class="fa-solid fa-briefcase text-slate-300 text-2xl hover:text-brand-cyan transition-colors cursor-pointer"></i>
+                                <i class="fa-solid fa-user text-slate-300 text-2xl hover:text-brand-cyan transition-colors cursor-pointer"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[110%] bg-brand-cyan/20 blur-[100px] -z-10 rounded-full"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Trust Badges & Awards (Using Official Uploaded Award Logos) -->
+        <section class="border-y border-slate-200 bg-white py-12 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+
+                    <!-- Mobile: show both logos in a single row above stats -->
+                    <div class="w-full md:hidden flex justify-between items-center mb-4 px-6">
+                        <img src="./3.jpg" alt="Left Trust Badge" class="h-12 sm:h-16 w-auto object-contain" loading="lazy">
+                        <img src="./4.jpg" alt="Right Trust Badge" class="h-12 sm:h-16 w-auto object-contain" loading="lazy">
+                    </div>
+
+                    <!-- Left logo for md+ screens -->
+                    <div class="hidden md:flex md:w-1/5 justify-start">
+                        <img src="./3.jpg" alt="Left Trust Badge" class="h-12 sm:h-16 md:h-20 w-auto object-contain" loading="lazy">
+                    </div>
+
+                    <!-- Stats (center) -->
+                    <div class="w-full md:w-3/5 flex gap-8 md:gap-16 items-center justify-center">
+                        <div>
+                            <h3 class="text-4xl font-black text-brand-deep">40k+</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Runners</p>
+                        </div>
+                        <div class="h-12 w-px bg-slate-200"></div>
+                        <div>
+                            <h3 class="text-4xl font-black text-brand-deep">540</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Districts</p>
+                        </div>
+                        <div class="h-12 w-px bg-slate-200"></div>
+                        <div>
+                            <h3 class="text-4xl font-black text-brand-deep">11k+</h3>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Pin Codes</p>
+                        </div>
+                    </div>
+
+                    <!-- Right logo for md+ screens -->
+                    <div class="hidden md:flex md:w-1/5 justify-end">
+                        <img src="./4.jpg" alt="Right Trust Badge" class="h-12 sm:h-16 md:h-20 w-auto object-contain" loading="lazy">
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Target Audience with Animated Vectors -->
+        <section class="py-24 bg-brand-surface relative">
+            <div class="max-w-7xl mx-auto px-6">
+                
+                <div class="text-center mb-20 reveal">
+                    <h2 class="text-5xl font-black text-brand-deep leading-[1.4]">प्रभावक कौन बन सकता है?</h2>
+                    <p class="text-slate-500 mt-4 text-lg font-medium">Designed for anyone looking to build a secondary income.</p>
+                </div>
+                
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-12">
+                    
+
+                    <div class="w-full lg:w-2/4 grid grid-cols-1 sm:grid-cols-2 gap-8 reveal">
+                        <div class="p-8 rounded-[2rem] bg-white border border-slate-100 hover:border-brand-cyan/30 hover:shadow-soft transition-all group">
+                            <div class="w-16 h-16 bg-brand-surface rounded-2xl flex items-center justify-center text-brand-cyan text-3xl mb-6 group-hover:-translate-y-2 group-hover:bg-brand-cyan/10 transition-all shadow-sm"><i class="fa-solid fa-house-user"></i></div>
+                            <h4 class="font-bold text-brand-deep text-xl">Housewives</h4>
+                            <p class="text-base text-slate-500 mt-2 leading-relaxed">Earn safely from the comfort of your home.</p>
+                        </div>
+                        <div class="p-8 rounded-[2rem] bg-white border border-slate-100 hover:border-brand-cyan/30 hover:shadow-soft transition-all group">
+                            <div class="w-16 h-16 bg-brand-surface rounded-2xl flex items-center justify-center text-brand-cyan text-3xl mb-6 group-hover:-translate-y-2 group-hover:bg-brand-cyan/10 transition-all shadow-sm"><i class="fa-solid fa-graduation-cap"></i></div>
+                            <h4 class="font-bold text-brand-deep text-xl">Students</h4>
+                            <p class="text-base text-slate-500 mt-2 leading-relaxed">Manage expenses and build marketing skills.</p>
+                        </div>
+                        <div class="p-8 rounded-[2rem] bg-white border border-slate-100 hover:border-brand-cyan/30 hover:shadow-soft transition-all group">
+                            <div class="w-16 h-16 bg-brand-surface rounded-2xl flex items-center justify-center text-brand-cyan text-3xl mb-6 group-hover:-translate-y-2 group-hover:bg-brand-cyan/10 transition-all shadow-sm"><i class="fa-solid fa-briefcase"></i></div>
+                            <h4 class="font-bold text-brand-deep text-xl">Professionals</h4>
+                            <p class="text-base text-slate-500 mt-2 leading-relaxed">Create a parallel income stream effortlessly.</p>
+                        </div>
+                        <div class="p-8 rounded-[2rem] bg-white border border-slate-100 hover:border-brand-cyan/30 hover:shadow-soft transition-all group">
+                            <div class="w-16 h-16 bg-brand-surface rounded-2xl flex items-center justify-center text-brand-cyan text-3xl mb-6 group-hover:-translate-y-2 group-hover:bg-brand-cyan/10 transition-all shadow-sm"><i class="fa-solid fa-rocket"></i></div>
+                            <h4 class="font-bold text-brand-deep text-xl">Side Hustlers</h4>
+                            <p class="text-base text-slate-500 mt-2 leading-relaxed">Turn free time into a profitable business.</p>
+                        </div>
+                    </div>
+
+                    <!-- Decorative side images removed per request -->
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Free Toolkit Section -->
+        <section class="py-24 max-w-7xl mx-auto px-6 reveal">
+            <div class="bg-brand-deep rounded-[4rem] p-12 md:p-20 relative overflow-hidden text-white flex flex-col md:flex-row gap-16 items-center shadow-phone">
+                <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-brand-cyan/20 blur-[120px] rounded-full"></div>
+                
+                <div class="md:w-1/2 relative z-10">
+                    <div class="inline-flex items-center gap-3 bg-white text-brand-deep text-xs font-bold px-5 py-2.5 rounded-full uppercase tracking-widest mb-8 shadow-sm">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span> First 500 Users Only
+                    </div>
+                    <h2 class="text-5xl md:text-6xl font-black leading-[1.2] mb-6">Get our ₹2,000 <br>Toolkit <span class="text-brand-cyan">FREE.</span></h2>
+                    <p class="text-slate-300 text-xl leading-relaxed">Your registration unlocks everything you need to start earning from day one. No prior experience needed.</p>
+                </div>
+                
+                <div class="md:w-1/2 relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+                    <div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/10 flex items-center gap-5 hover:bg-white/20 transition-all cursor-default hover:-translate-y-1">
+                        <i class="fa-solid fa-robot text-3xl text-brand-cyan"></i>
+                        <span class="font-bold text-base">Viral ChatGPT Prompts</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/10 flex items-center gap-5 hover:bg-white/20 transition-all cursor-default hover:-translate-y-1">
+                        <i class="fa-solid fa-calendar-days text-3xl text-brand-cyan"></i>
+                        <span class="font-bold text-base">30-Day Content Plan</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/10 flex items-center gap-5 hover:bg-white/20 transition-all cursor-default hover:-translate-y-1">
+                        <i class="fa-solid fa-comment-dots text-3xl text-brand-cyan"></i>
+                        <span class="font-bold text-base">DM Conversion Templates</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/10 flex items-center gap-5 hover:bg-white/20 transition-all cursor-default hover:-translate-y-1">
+                        <i class="fa-solid fa-book-open-reader text-3xl text-brand-cyan"></i>
+                        <span class="font-bold text-base">Marketing Setup Guide</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Social Proof / Testimonial -->
+        <section class="py-16 max-w-6xl mx-auto px-6 reveal">
+            <div class="bg-white p-10 md:p-16 rounded-[4rem] shadow-soft border border-slate-100 flex flex-col md:flex-row items-center gap-12 hover:shadow-xl transition-shadow duration-500">
+                <div class="flex flex-col items-center text-center w-full md:w-1/3">
+                    <div class="w-40 h-40 rounded-full overflow-hidden border-4 border-brand-cyan/20 mb-6 shadow-lg animate-float-slow bg-white">
+                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='150' height='150'><rect width='100%25' height='100%25' fill='%23f1f5f9'/><circle cx='75' cy='48' r='30' fill='%23cbd5e1'/><rect x='30' y='98' width='90' height='30' rx='15' fill='%23cbd5e1'/></svg>" alt="Blank profile" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-black text-2xl text-brand-deep">Shani Raj Verma</h3>
+                    <p class="text-sm font-bold text-brand-cyan uppercase tracking-widest mt-1.5">Kaushambi, U.P.</p>
+                    <div class="flex gap-1.5 text-yellow-400 text-lg mt-4 animate-pulse"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                </div>
+                
+                <div class="w-full md:w-2/3 relative">
+                    <div class="absolute -left-4 top-12 w-8 h-8 bg-brand-surface rotate-45 border-l border-b border-slate-200 hidden md:block"></div>
+                    <div class="bg-brand-surface p-10 md:p-12 rounded-[3rem] rounded-tl-none border border-slate-200 relative z-10">
+                        <p class="text-xl md:text-2xl text-brand-deep font-medium leading-relaxed">
+                            "I started using my phone to promote brands during my free time. By simply following the guides provided, <span class="font-bold text-brand-cyan bg-brand-cyan/10 px-3 py-1 rounded inline-block">I made ₹62,000 in 6 months</span> right from my village. The support from Anaxee is incredible!"
+                        </p>
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Frequently Asked Questions -->
+        <section class="py-24 bg-white border-y border-slate-100 reveal">
+            <div class="max-w-5xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-black text-brand-deep">Frequently Asked Questions</h2>
+                    <p class="text-slate-500 mt-4 font-medium text-xl">Everything you need to know about the Prabhavak program.</p>
+                </div>
+                
+                <div class="space-y-6">
+                    <details class="group bg-brand-surface rounded-[2rem] border border-slate-200 open:bg-white open:shadow-soft open:border-brand-cyan/30 transition-all duration-300">
+                        <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-8 md:p-10 text-brand-deep text-xl select-none">
+                            <span>Why is there a ₹299 fee?</span>
+                            <span class="transition-transform duration-300 group-open:rotate-180 text-brand-cyan bg-brand-cyan/10 w-12 h-12 flex justify-center items-center rounded-full shrink-0"><i class="fa-solid fa-chevron-down text-lg"></i></span>
+                        </summary>
+                        <div class="px-8 md:px-10 pb-10 text-slate-500 text-lg font-medium leading-relaxed border-t border-slate-100 pt-6">
+                            This small, one-time fee filters out non-serious applicants. It also covers the cost of setting up your verified digital runner dashboard and immediately unlocks your ₹2,000+ digital creator toolkit.
+                        </div>
+                    </details>
+                    
+                    <details class="group bg-brand-surface rounded-[2rem] border border-slate-200 open:bg-white open:shadow-soft open:border-brand-cyan/30 transition-all duration-300">
+                        <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-8 md:p-10 text-brand-deep text-xl select-none">
+                            <span>Do I need thousands of followers?</span>
+                            <span class="transition-transform duration-300 group-open:rotate-180 text-brand-cyan bg-brand-cyan/10 w-12 h-12 flex justify-center items-center rounded-full shrink-0"><i class="fa-solid fa-chevron-down text-lg"></i></span>
+                        </summary>
+                        <div class="px-8 md:px-10 pb-10 text-slate-500 text-lg font-medium leading-relaxed border-t border-slate-100 pt-6">
+                            Absolutely not! You can start with zero followers. Our training kit teaches you how to effectively share links within your existing WhatsApp contacts, Facebook groups, and via direct messaging.
+                        </div>
+                    </details>
+
+                    <details class="group bg-brand-surface rounded-[2rem] border border-slate-200 open:bg-white open:shadow-soft open:border-brand-cyan/30 transition-all duration-300">
+                        <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-8 md:p-10 text-brand-deep text-xl select-none">
+                            <span>How do I receive my payments?</span>
+                            <span class="transition-transform duration-300 group-open:rotate-180 text-brand-cyan bg-brand-cyan/10 w-12 h-12 flex justify-center items-center rounded-full shrink-0"><i class="fa-solid fa-chevron-down text-lg"></i></span>
+                        </summary>
+                        <div class="px-8 md:px-10 pb-10 text-slate-500 text-lg font-medium leading-relaxed border-t border-slate-100 pt-6">
+                            Payments are highly secure and transparent. Any earnings generated from your link clicks or successful campaigns are transferred directly to your verified Bank Account via UPI.
+                        </div>
+                    </details>
+
+                    <details class="group bg-brand-surface rounded-[2rem] border border-slate-200 open:bg-white open:shadow-soft open:border-brand-cyan/30 transition-all duration-300">
+                        <summary class="flex justify-between items-center font-bold cursor-pointer list-none p-8 md:p-10 text-brand-deep text-xl select-none">
+                            <span>Is my money refundable?</span>
+                            <span class="transition-transform duration-300 group-open:rotate-180 text-brand-cyan bg-brand-cyan/10 w-12 h-12 flex justify-center items-center rounded-full shrink-0"><i class="fa-solid fa-chevron-down text-lg"></i></span>
+                        </summary>
+                        <div class="px-8 md:px-10 pb-10 text-slate-500 text-lg font-medium leading-relaxed border-t border-slate-100 pt-6">
+                            Yes. Anaxee operates on total trust. We offer a transparent, no-questions-asked 24-hour refund policy if you review the platform and decide it's not the right fit for you.
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. The VIP Ticket Checkout -->
+        <section id="ticket" class="py-24 px-6 bg-brand-surface relative overflow-hidden reveal">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl md:text-5xl font-black text-brand-deep">Claim Your Access</h2>
+                    <p class="text-slate-500 mt-4 font-medium text-xl">Secure your spot and start earning today.</p>
+                </div>
+
+                <div class="relative bg-brand-deep rounded-[4rem] shadow-phone flex flex-col md:flex-row overflow-hidden border border-brand-cyan/20">
+                    
+                    <div class="md:w-[45%] p-12 md:p-16 relative flex flex-col justify-between bg-brand-gradient">
+                        <div class="ticket-cutout-left hidden md:block z-20 shadow-[inset_-4px_0_10px_rgba(0,0,0,0.1)] scale-150"></div>
+                        <div class="ticket-cutout-right hidden md:block z-20 shadow-[inset_4px_0_10px_rgba(0,0,0,0.1)] scale-150"></div>
+                        
+                        <div class="relative z-10 text-white h-full flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-12">
+                                    <!-- Only Anaxee Logo, No Prabhavak Logo -->
+                                    <a href="https://anaxee.com/" target="_blank" class="block shrink-0">
+                                        <img src="./Anaxee white logo.png" alt="Anaxee Logo" class="logo object-contain opacity-90 hover:opacity-100 transition-opacity max-w-[220px]" loading="eager">
+                                    </a>
+                                    <span class="text-[12px] font-black uppercase tracking-widest bg-white text-brand-deep px-4 py-2 rounded-lg shadow-sm">VIP Entry</span>
+                                </div>
+                                <h3 class="text-4xl font-black mb-3">Digital Runner Pass</h3>
+                                <p class="text-white/80 text-lg font-medium mb-12">Lifetime Account Validity.</p>
+                                
+                                <div class="space-y-5 mb-10">
+                                    <div class="flex justify-between text-lg border-b border-white/20 pb-4">
+                                        <span>Base Access</span><span class="font-bold">₹299</span>
+                                    </div>
+                                    <div class="flex justify-between text-lg border-b border-white/20 pb-4">
+                                        <span>Creator Toolkit</span><span class="text-brand-deep font-bold bg-white px-3 py-1 rounded text-sm uppercase tracking-widest animate-pulse">FREE</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-auto">
+                                <p class="text-xs uppercase tracking-widest font-bold opacity-80 mb-2">Total Due Today</p>
+                                <div class="text-7xl font-black tracking-tighter">₹299</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="md:w-[55%] p-12 md:p-16 relative bg-white border-t-2 md:border-t-0 md:border-l-2 border-dashed border-slate-300">
+                        <h3 class="text-2xl font-black text-brand-deep mb-10">Enter Details to Continue</h3>
+                        
+                        <form class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-2.5">Full Name</label>
+                                <div class="relative flex items-center group">
+                                    <i class="fa-solid fa-user absolute left-6 text-slate-300 group-focus-within:text-brand-cyan transition-colors text-lg"></i>
+                                    <input type="text" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 pl-14 pr-5 text-base font-bold text-brand-deep focus:ring-2 focus:ring-brand-cyan/30 focus:border-brand-cyan outline-none transition-all hover:border-brand-cyan/50" placeholder="Enter full name">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-2.5">Email Address</label>
+                                <div class="relative flex items-center group">
+                                    <i class="fa-solid fa-envelope absolute left-6 text-slate-300 group-focus-within:text-brand-cyan transition-colors text-lg"></i>
+                                    <input type="email" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 pl-14 pr-5 text-base font-bold text-brand-deep focus:ring-2 focus:ring-brand-cyan/30 focus:border-brand-cyan outline-none transition-all hover:border-brand-cyan/50" placeholder="your@email.com">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-2.5">WhatsApp Number</label>
+                                <div class="relative flex items-center group">
+                                    <i class="fa-brands fa-whatsapp absolute left-6 text-slate-300 text-xl group-focus-within:text-brand-cyan transition-colors"></i>
+                                    <span class="absolute left-[3.5rem] text-base font-bold text-slate-400 border-r border-slate-200 pr-3">+91</span>
+                                    <input type="tel" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 pl-[6.5rem] pr-5 text-base font-bold text-brand-deep focus:ring-2 focus:ring-brand-cyan/30 focus:border-brand-cyan outline-none transition-all hover:border-brand-cyan/50" placeholder="98765 43210">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-5 pt-2">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-2.5">State</label>
+                                    <select class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 px-6 text-base font-bold text-brand-deep focus:ring-2 focus:ring-brand-cyan/30 focus:border-brand-cyan outline-none cursor-pointer appearance-none hover:border-brand-cyan/50 transition-all">
+                                        <option value="" disabled selected>Select State</option>
+                                        <option value="mp">Madhya Pradesh</option>
+                                        <option value="up">Uttar Pradesh</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-2.5">District</label>
+                                    <select class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-5 px-6 text-base font-bold text-brand-deep focus:ring-2 focus:ring-brand-cyan/30 focus:border-brand-cyan outline-none cursor-pointer appearance-none hover:border-brand-cyan/50 transition-all">
+                                        <option value="" disabled selected>Select District</option>
+                                        <option value="indore">Indore</option>
+                                        <option value="bhopal">Bhopal</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn-shine w-full mt-10 bg-brand-deep text-white font-black text-base uppercase tracking-widest py-6 rounded-2xl hover:bg-slate-800 transition-all shadow-lg active:scale-[0.98] flex justify-center items-center gap-3">
+                                Unlock Pass Now <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            
+                            <div class="mt-8 flex flex-col items-center gap-4">
+                                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-shield-halved text-brand-cyan mr-1.5"></i> 100% Data Protection & Secure UPI</p>
+                                <div class="flex gap-6 opacity-40 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                                    <i class="fa-brands fa-google-pay text-4xl"></i>
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" class="h-5 mt-2">
+                                    <i class="fa-brands fa-amazon-pay text-4xl"></i>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 9. Footer with Solo Anaxee Logo -->
+    <footer class="bg-brand-deep text-slate-400 py -16 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8">
+            
+            <a href="https://anaxee.com/" target="_blank" class="block opacity-70 hover:opacity-100 transition-opacity" >
+                <!-- Using Anaxee Black Logo.png (White Logo) for Dark Footer - moved to assets/ -->
+
+                <img src="./Anaxee white logo.png" alt="Anaxee Logo" class="logo object-contain max-w-[180px]" loading="lazy">
+            </a>
+
+            <div class="flex flex-col md:items-end text-center md:text-right gap-3">
+                <p class="text-sm font-bold uppercase tracking-widest text-white/50">© 2026 Anaxee Digital Runners. All rights reserved.</p>
+                <div class="flex gap-6 text-white/30 text-base justify-center md:justify-end mt-2">
+                    <a href="#" class="hover:text-brand-cyan transition-colors">Terms of Service</a>
+                    <a href="#" class="hover:text-brand-cyan transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-brand-cyan transition-colors">Refund Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Reveal Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { 
+                threshold: 0.1, 
+                rootMargin: '0px 0px -50px 0px' 
+            });
+
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
