@@ -62,6 +62,63 @@
             }
         }
     </script>
+    <script>
+        // Auto-advance trust slider every 5 seconds in a continuous loop
+        document.addEventListener('DOMContentLoaded', () => {
+            const slider = document.getElementById('trust-slider');
+            if (!slider) return;
+            const slides = Array.from(slider.children);
+            if (!slides.length) return;
+            let idx = 0;
+            let autoId = null;
+
+            function scrollToIndex(i) {
+                const slide = slides[i];
+                if (!slide) return;
+                // center the slide in view when possible
+                const left = slide.offsetLeft - slider.offsetLeft - Math.max(0, (slider.clientWidth - slide.clientWidth) / 2);
+                slider.scrollTo({ left, behavior: 'smooth' });
+            }
+
+            function startAuto() {
+                stopAuto();
+                autoId = setInterval(() => {
+                    idx = (idx + 1) % slides.length;
+                    scrollToIndex(idx);
+                }, 5000);
+            }
+
+            function stopAuto() {
+                if (autoId) { clearInterval(autoId); autoId = null; }
+            }
+
+            // pause/resume on hover & focus
+            slider.addEventListener('mouseenter', stopAuto);
+            slider.addEventListener('mouseleave', startAuto);
+            slider.addEventListener('focusin', stopAuto);
+            slider.addEventListener('focusout', startAuto);
+
+            // sync idx when user manually scrolls (debounced)
+            let scrollTimer = null;
+            slider.addEventListener('scroll', () => {
+                if (scrollTimer) clearTimeout(scrollTimer);
+                scrollTimer = setTimeout(() => {
+                    const center = slider.scrollLeft + slider.clientWidth / 2;
+                    let nearest = 0; let nearestDist = Infinity;
+                    slides.forEach((s, i) => {
+                        const sCenter = s.offsetLeft + s.clientWidth / 2;
+                        const dist = Math.abs(sCenter - center);
+                        if (dist < nearestDist) { nearestDist = dist; nearest = i; }
+                    });
+                    idx = nearest;
+                }, 120);
+            });
+
+            // initialize
+            scrollToIndex(idx);
+            startAuto();
+        });
+    </script>
     <style>
         body { background-color: #f8fafc; overflow-x: hidden; }
         ::-webkit-scrollbar { width: 6px; }
@@ -110,6 +167,10 @@
         .logo { height: 48px; width: auto; max-width: 220px; }
         @media (min-width: 640px) { .logo { height: 56px; } }
         @media (min-width: 1024px) { .logo { height: 72px; } }
+
+        /* Trust slider scrollbar hidden */
+        #trust-slider { -ms-overflow-style: none; scrollbar-width: none; }
+        #trust-slider::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="text-slate-600 antialiased selection:bg-brand-cyan selection:text-white">
@@ -302,6 +363,31 @@
                         </div>
                     </div>
                     <div class="hidden sm:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[90%] bg-brand-cyan/20 blur-[80px] -z-10 rounded-full"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3.5. Trust Slides (auto-scroll every 5s) -->
+        <section class="py-8 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="overflow-hidden rounded-lg">
+                    <div id="trust-slider" class="flex gap-4 snap-x snap-mandatory overflow-x-auto scroll-smooth py-4 px-2" aria-label="Trust slides">
+                        <div class="snap-center flex-shrink-0 w-64 sm:w-72 md:w-80 bg-white rounded-lg border p-3 flex items-center justify-center">
+                            <img src="./30.jpg" alt="slide 30" class="object-contain max-h-40">
+                        </div>
+                        <div class="snap-center flex-shrink-0 w-64 sm:w-72 md:w-80 bg-white rounded-lg border p-3 flex items-center justify-center">
+                            <img src="./31.jpg" alt="slide 31" class="object-contain max-h-40">
+                        </div>
+                        <div class="snap-center flex-shrink-0 w-64 sm:w-72 md:w-80 bg-white rounded-lg border p-3 flex items-center justify-center">
+                            <img src="./32.jpg" alt="slide 32" class="object-contain max-h-40">
+                        </div>
+                        <div class="snap-center flex-shrink-0 w-64 sm:w-72 md:w-80 bg-white rounded-lg border p-3 flex items-center justify-center">
+                            <img src="./33.jpg" alt="slide 33" class="object-contain max-h-40">
+                        </div>
+                        <div class="snap-center flex-shrink-0 w-64 sm:w-72 md:w-80 bg-white rounded-lg border p-3 flex items-center justify-center">
+                            <img src="./34.jpg" alt="slide 34" class="object-contain max-h-40">
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
